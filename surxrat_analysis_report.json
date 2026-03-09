@@ -1,56 +1,48 @@
 {
-  "report_title": "SURXRAT V5 C2 Panel Technical Analysis",
+  "report_title": "SURXRAT V5 C2 Panel - Comprehensive Intelligence Report",
   "analysis_date": "2026-03-09",
-  "target_url": "https://panel-penting-surxrat.vercel.app",
   "infrastructure": {
-    "hosting": "Vercel",
-    "backend": "Firebase Realtime Database",
-    "firebase_config": {
-      "project_id": "fir-e9e7b",
-      "database_url": "https://fir-e9e7b-default-rtdb.firebaseio.com",
-      "api_key": "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc",
-      "storage_bucket": "fir-e9e7b.firebasestorage.app",
-      "messaging_sender_id": "587987051229",
-      "app_id": "1:587987051229:android:9bf4a2b471b5597e8df134"
-    }
+    "hosting": "Vercel (Frontend)",
+    "backend": "Firebase Realtime Database (fir-e9e7b)",
+    "database_url": "https://fir-e9e7b-default-rtdb.firebaseio.com",
+    "api_key": "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc"
   },
-  "malware_capabilities": [
-    "SMS Interception",
-    "Call Log Exfiltration",
-    "Contact List Theft",
-    "Real-time GPS Tracking",
-    "Remote Camera Access (Front/Back)",
-    "Notification Monitoring (WhatsApp, Telegram, etc.)",
-    "Clipboard Keylogging",
-    "Remote Device Locking with PIN",
-    "Anti-Uninstall Persistence",
-    "Data Exhaustion (Network Lagging)"
+  "operational_scale": {
+    "total_active_victims": 3764,
+    "total_unique_attackers": 1009,
+    "historical_targets_in_blacklist": 1655,
+    "primary_target_region": "Indonesia"
+  },
+  "malware_functionality": {
+    "persistence": "Anti-Uninstall Payload (Accessibility Service based)",
+    "surveillance": [
+      "SMS Interception",
+      "Call Log Theft",
+      "GPS Tracking (Real-time via Leaflet)",
+      "Stealth Camera (Front/Back)",
+      "Clipboard Monitoring",
+      "Notification Listener (WhatsApp, Banking, etc.)"
+    ],
+    "destructive_actions": [
+      "Lag Sinyal (Data Exhaustion)",
+      "Remote Device Locking",
+      "File Deletion"
+    ]
+  },
+  "identified_database_paths": [
+    "surxrat5/ (Victim Metadata)",
+    "database/sms/ (Intercepted SMS)",
+    "database/contacts/ (Stolen Contacts)",
+    "database/calls/ (Call Logs)",
+    "database/accounts/ (Stolen Google Accounts)",
+    "notif/ (Real-time Notifications)",
+    "control/ (C2 Command Queue)",
+    "anti_uninstall/ (Persistence Settings)",
+    "blacklist/ (Retired Victims)",
+    "clipboard/ (Stolen Clipboard History)"
   ],
-  "victim_statistics": {
-    "total_infected_devices": 1500,
-    "primary_region": "Indonesia",
-    "sample_victim": {
-      "device_id": "84c865a0-52d3-3099-b24b-506a72dd9820",
-      "device_model": "nubia Z2350 Android 13",
-      "permissions_granted": [
-        "SMS",
-        "Kontak",
-        "Panggilan",
-        "Lokasi",
-        "Gmail",
-        "Aksesibilitas"
-      ],
-      "battery_level": "31%",
-      "network": "Mobile Data (XL Axiata, 3)",
-      "location": {
-        "coordinates": "-7.0038251,106.6644354",
-        "last_updated": 1772287016822
-      }
-    }
-  },
-  "operational_security_risks": {
-    "credential_exposure": "Firebase API Key and Database URL are hardcoded in the frontend JavaScript.",
-    "public_registration": "Firebase Auth allows open registration, enabling unauthorized access to the victim database.",
-    "data_exposure": "At least 1,500 victims' personal data is currently exposed due to the lack of proper Firebase security rules."
+  "security_deficiencies": {
+    "client_side_exposure": "Full Firebase credentials and command logic exposed in index-0CLwk5Y_.js",
+    "unauthorized_access": "Firebase Auth allows public registration, permitting full database read access via authorized tokens."
   }
 }
