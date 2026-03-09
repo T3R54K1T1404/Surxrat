@@ -1,0 +1,56 @@
+{
+  "report_title": "SURXRAT V5 C2 Panel Technical Analysis",
+  "analysis_date": "2026-03-09",
+  "target_url": "https://panel-penting-surxrat.vercel.app",
+  "infrastructure": {
+    "hosting": "Vercel",
+    "backend": "Firebase Realtime Database",
+    "firebase_config": {
+      "project_id": "fir-e9e7b",
+      "database_url": "https://fir-e9e7b-default-rtdb.firebaseio.com",
+      "api_key": "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc",
+      "storage_bucket": "fir-e9e7b.firebasestorage.app",
+      "messaging_sender_id": "587987051229",
+      "app_id": "1:587987051229:android:9bf4a2b471b5597e8df134"
+    }
+  },
+  "malware_capabilities": [
+    "SMS Interception",
+    "Call Log Exfiltration",
+    "Contact List Theft",
+    "Real-time GPS Tracking",
+    "Remote Camera Access (Front/Back)",
+    "Notification Monitoring (WhatsApp, Telegram, etc.)",
+    "Clipboard Keylogging",
+    "Remote Device Locking with PIN",
+    "Anti-Uninstall Persistence",
+    "Data Exhaustion (Network Lagging)"
+  ],
+  "victim_statistics": {
+    "total_infected_devices": 1500,
+    "primary_region": "Indonesia",
+    "sample_victim": {
+      "device_id": "84c865a0-52d3-3099-b24b-506a72dd9820",
+      "device_model": "nubia Z2350 Android 13",
+      "permissions_granted": [
+        "SMS",
+        "Kontak",
+        "Panggilan",
+        "Lokasi",
+        "Gmail",
+        "Aksesibilitas"
+      ],
+      "battery_level": "31%",
+      "network": "Mobile Data (XL Axiata, 3)",
+      "location": {
+        "coordinates": "-7.0038251,106.6644354",
+        "last_updated": 1772287016822
+      }
+    }
+  },
+  "operational_security_risks": {
+    "credential_exposure": "Firebase API Key and Database URL are hardcoded in the frontend JavaScript.",
+    "public_registration": "Firebase Auth allows open registration, enabling unauthorized access to the victim database.",
+    "data_exposure": "At least 1,500 victims' personal data is currently exposed due to the lack of proper Firebase security rules."
+  }
+}
