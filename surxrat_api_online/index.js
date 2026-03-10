@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Surxrat Configuration
-const API_KEY = "AIzaSyDfHMsNoknifGnkJEr6DJPSoEiwmbmlYBc";
+const API_KEY = "AIzaSyBIQLjy-Tnjc1JMgLpoYI-2tnn8Nbo3Qdk";
 const DB_URL = "https://kwontol-default-rtdb.firebaseio.com";
 
 app.use(cors());
